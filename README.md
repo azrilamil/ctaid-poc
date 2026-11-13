@@ -163,6 +163,7 @@ python scripts/reseed-demo.py             # regenerate CSV, clear uploads and hi
 | [docs/testing-and-ci.md](docs/testing-and-ci.md) | test layout, gates, CI steps |
 | [docs/design-decisions.md](docs/design-decisions.md) | why Streamlit, why generated data, fallbacks |
 | [docs/assets.md](docs/assets.md) | hero and icon provenance and license |
+| [docs/operations.md](docs/operations.md) | live backends, daily reset, deploy |
 
 ## My role
 
