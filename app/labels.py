@@ -34,9 +34,29 @@ def artifact_badge(store_name: str) -> tuple[str, str]:
     return DEMO_STORAGE_LABEL, DEMO_STORAGE_HINT
 
 
+
+def storage_caption(metadata_label: str, storage_label: str) -> str | None:
+    """Visitor facing caption under the storage cards, or None if none is needed."""
+    if storage_label == GARAGE_LABEL and metadata_label == DEMO_STORAGE_LABEL:
+        return (
+            "Metadata is kept on this deployment and clears on the scheduled reseed. "
+            "Trained artifacts and uploads are stored in Garage S3."
+        )
+    if storage_label == GARAGE_LABEL:
+        return "Trained artifacts and uploads are stored in Garage S3."
+    if DEMO_STORAGE_LABEL in (metadata_label, storage_label):
+        return (
+            "Demo storage is local to this deployment and is cleared by the scheduled reseed, "
+            "so nothing here is a permanent record."
+        )
+    return None
+
+
 __all__ = [
     "DEMO_STORAGE_HINT",
     "DEMO_STORAGE_LABEL",
+    "GARAGE_LABEL",
     "artifact_badge",
     "metadata_badge",
+    "storage_caption",
 ]

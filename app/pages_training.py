@@ -10,7 +10,7 @@ import streamlit as st
 from app import charts
 from app.backend import status
 from app.data import class_label
-from app.labels import DEMO_STORAGE_LABEL, artifact_badge, metadata_badge
+from app.labels import artifact_badge, metadata_badge, storage_caption
 from app.schema import CLASS_LABELS
 from app.state import backend, dataset, model_dir, set_active_run, store, trained_runs
 from app.theme import MUTED, footer, page_header, section, stat
@@ -244,11 +244,9 @@ def render() -> None:
         stat("Predictions logged", f"{info.prediction_count}", "synthetic only")
     with cols[3]:
         stat("Artifact store", storage_label, storage_hint)
-    if DEMO_STORAGE_LABEL in (metadata_label, storage_label):
-        st.caption(
-            "Demo storage is local to this deployment and is cleared by the scheduled reseed, "
-            "so nothing here is a permanent record."
-        )
+    caption = storage_caption(metadata_label, storage_label)
+    if caption:
+        st.caption(caption)
 
     section("Configuration", "Pick models, split size and an optional row cap.")
     models, test_size, random_state, row_cap = _controls()

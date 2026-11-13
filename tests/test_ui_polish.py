@@ -9,8 +9,10 @@ from app.data import feature_columns
 from app.labels import (
     DEMO_STORAGE_HINT,
     DEMO_STORAGE_LABEL,
+    GARAGE_LABEL,
     artifact_badge,
     metadata_badge,
+    storage_caption,
 )
 from app.pages_data import _display_frame
 from app.pages_prediction import DEFAULT_MODEL_KEY, _artifact_label, default_model_label
@@ -111,6 +113,20 @@ def test_configured_backends_name_the_product() -> None:
     assert metadata_badge("convex")[0] == "Convex"
     assert artifact_badge("garage-s3")[0] == "Garage S3"
     assert DEMO_STORAGE_LABEL == "Demo storage"
+
+
+def test_storage_caption_names_garage_when_artifacts_are_there() -> None:
+    garage_with_local_meta = storage_caption(DEMO_STORAGE_LABEL, GARAGE_LABEL)
+    assert garage_with_local_meta is not None
+    assert "Garage S3" in garage_with_local_meta
+    assert "local to this deployment" not in garage_with_local_meta
+    both_local = storage_caption(DEMO_STORAGE_LABEL, DEMO_STORAGE_LABEL)
+    assert both_local is not None
+    assert "Demo storage is local to this deployment" in both_local
+    both_cloud = storage_caption("Convex", GARAGE_LABEL)
+    assert both_cloud is not None
+    assert "Garage S3" in both_cloud
+
 
 
 def test_upload_drops_pattern_alias_and_reports_friendly_name(small_frame: pd.DataFrame) -> None:

@@ -3,6 +3,15 @@
 All notable changes to this project are recorded here. The format follows
 Keep a Changelog, and the project uses semantic versioning.
 
+## [2.0.2] 2026-11-13
+
+### Changed
+
+- When Garage S3 is configured, the Model Training storage caption says that
+  artifacts and uploads are stored in Garage S3, instead of the local demo
+  storage wording. Metadata can still be local until the Convex backend is
+  wired.
+
 ## [2.0.1] 2026-11-13
 
 Visitor facing polish after a screenshot review. No change to the data, the
