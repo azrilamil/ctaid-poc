@@ -1,0 +1,28 @@
+# Streamlit runtime configuration for the CTAID POC demo.
+# The dark theme is defined here so the app never falls back to the default
+# white Streamlit surfaces.
+
+[theme]
+base = "dark"
+primaryColor = "#5AC8FA"
+backgroundColor = "#080F1A"
+secondaryBackgroundColor = "#0E1A2B"
+textColor = "#E7EEF9"
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+maxUploadSize = 2
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = false
+
+[runner]
+magicEnabled = false

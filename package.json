@@ -1,0 +1,13 @@
+{
+  "name": "ctaid-poc-convex",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Convex functions for the CTAID POC demo (synthetic data only).",
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy"
+  },
+  "dependencies": {
+    "convex": "^1.17.0"
+  }
+}

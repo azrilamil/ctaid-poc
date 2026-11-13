@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CTAID POC">
-  <rect width="64" height="64" rx="14" fill="#122848"/>
-  <rect x="10" y="10" width="44" height="44" rx="10" fill="#F5F7FA"/>
-  <path d="M18 38 C22 20, 42 20, 46 32" fill="none" stroke="#122848" stroke-width="5" stroke-linecap="round"/>
-  <path d="M34 34 C40 34, 48 40, 48 48" fill="none" stroke="#C45C3E" stroke-width="5" stroke-linecap="round"/>
-</svg>

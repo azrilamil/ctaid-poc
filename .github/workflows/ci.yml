@@ -13,6 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
       - run: pip install -r requirements.txt
-      - run: python scripts/train_model.py
-      - run: pytest -q
+      - name: Generate synthetic dataset
+        run: python scripts/generate_synthetic_data.py
+      - name: Train demo artifacts
+        run: python scripts/train_demo_model.py --rows 1200
+      - name: Tests
+        run: pytest -q
+      - name: Content and privacy scan
+        run: python scripts/scan_content.py --out /tmp/ctaid-poc-scan.txt

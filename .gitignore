@@ -1,3 +1,5 @@
+# Ignore local runtime state and generated artifacts.
+
 __pycache__/
 *.py[cod]
 .venv/
@@ -6,11 +8,27 @@ venv/
 .env.*
 !.env.example
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
 htmlcov/
 dist/
+build/
 *.egg-info/
+node_modules/
+convex/_generated/
 .DS_Store
 .idea/
 .vscode/
 *.local
+
+# Local demo state: SQLite, uploads, object store mirror, logs.
+var/
+
+# Trained artifacts are rebuilt by scripts/train_demo_model.py.
+models/*.joblib
+models/*.json
+
+# Local gate logs.
+/tmp/
+*.log

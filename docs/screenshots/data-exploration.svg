@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <rect width="1440" height="900" fill="#080F1A"/>
+  <rect x="24" y="24" width="1392" height="852" rx="18" fill="#0E1A2B" stroke="#1E3250" stroke-width="2"/>
+  <rect x="24" y="24" width="300" height="852" rx="18" fill="#0B1626"/>
+  <text x="70" y="90" fill="#5AC8FA" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" letter-spacing="3">CTAID POC</text>
+  <text x="70" y="140" fill="#9FB0C9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Home</text>
+  <text x="70" y="180" fill="#9FB0C9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Data Exploration</text>
+  <text x="70" y="220" fill="#9FB0C9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Model Training</text>
+  <text x="70" y="260" fill="#9FB0C9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">Prediction</text>
+  <rect x="380" y="120" width="980" height="60" rx="12" fill="#122238" stroke="#1E3250"/>
+  <text x="404" y="158" fill="#BFE6FA" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20">Data Exploration placeholder</text>
+  <text x="380" y="260" fill="#E7EEF9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="40">Data Exploration</text>
+  <text x="380" y="308" fill="#9FB0C9" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20">distribution and box plot</text>
+  <text x="380" y="380" fill="#7F95B3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18">Replace with a real capture from the running app.</text>
+  <rect x="380" y="420" width="980" height="380" rx="14" fill="#0B1626" stroke="#1E3250" stroke-dasharray="8 10"/>
+  <rect x="380" y="828" width="980" height="34" rx="10" fill="rgba(255,122,89,0.10)" stroke="rgba(255,122,89,0.38)"/>
+  <text x="400" y="851" fill="#FFB59C" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16">Demo with synthetic data, not a medical tool.</text>
+</svg>
