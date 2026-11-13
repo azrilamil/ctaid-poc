@@ -38,15 +38,15 @@ demo. They are never presented as clinical categories.
 
 | Home | Data Exploration |
 | --- | --- |
-| ![Home](docs/screenshots/home.svg) | ![Data Exploration](docs/screenshots/data-exploration.svg) |
+| ![Home](docs/screenshots/home.png) | ![Data Exploration](docs/screenshots/data-exploration.png) |
 
 | Model Training | Prediction |
 | --- | --- |
-| ![Model Training](docs/screenshots/model-training.svg) | ![Prediction](docs/screenshots/prediction.svg) |
+| ![Model Training](docs/screenshots/model-training.png) | ![Prediction](docs/screenshots/prediction.png) |
 
-`docs/screenshots/README.md` explains how to capture each slot from the running
-app. The placeholders get replaced with real captures; nothing in the repository
-is a mock up of a different product.
+Captured from the live demo at [https://ctaid-poc.azril.io](https://ctaid-poc.azril.io)
+on 13 Nov 2026 (Asia/Kuala_Lumpur), 1440 by 900. The demo notice is visible in every
+shot. See `docs/screenshots/README.md` for the capture rules.
 
 ## Run locally
 
