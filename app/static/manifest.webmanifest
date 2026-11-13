@@ -1,0 +1,15 @@
+{
+  "name": "CTAID POC",
+  "short_name": "CTAID",
+  "description": "A portfolio proof of concept for a CT atherosclerosis detection research app. Demo with synthetic data, not a medical tool.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#122848",
+  "lang": "en",
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/static/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
