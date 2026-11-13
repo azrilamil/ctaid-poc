@@ -36,7 +36,7 @@ Prediction. The demo notice sits on every page.
 ## Model Training
 
 - Backend status strip: metadata backend, model versions, predictions logged,
-  artifact store. With local fallbacks the two storage cards read `Demo storage`
+  artifact store. The live demo shows `Convex` and `Garage S3`. With local fallbacks the two storage cards read `Demo storage`
   with the hint `Local to this demo, resets on a schedule`; the raw backend name
   is never shown. Convex and Garage S3 are named only when actually configured.
 - Model picker over four classifiers: Logistic Regression, Random Forest, SVM

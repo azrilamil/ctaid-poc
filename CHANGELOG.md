@@ -15,6 +15,8 @@ Keep a Changelog, and the project uses semantic versioning.
 
 - When both Convex and Garage S3 are configured, the Model Training caption
   names both: metadata on Convex, artifacts and uploads on Garage S3.
+- The live demo at https://ctaid-poc.azril.io is wired to Convex at
+  https://convex-demo.azril.io and to the ctaid-poc-demo Garage S3 bucket.
 
 ## [2.0.2] 2026-11-13
 

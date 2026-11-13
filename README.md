@@ -103,11 +103,18 @@ the repository.
 ## Optional backend wiring
 
 Both integrations are real but optional; the app is complete without them.
+The live demo at [https://ctaid-poc.azril.io](https://ctaid-poc.azril.io) is
+wired to both.
 
-| Feature | With env vars | Without env vars |
-| --- | --- | --- |
-| Dataset metadata, model versions, prediction history | Convex (`CONVEX_URL`) | SQLite in `var/ctaid-demo.sqlite3` |
-| CSV uploads and model artifacts | Garage S3 (`S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) | `var/objects/` on local disk |
+| Feature | Live demo | With env vars | Without env vars |
+| --- | --- | --- | --- |
+| Dataset metadata, model versions, prediction history | Convex at [https://convex-demo.azril.io](https://convex-demo.azril.io), a dedicated deployment separate from any private app | Convex (`CONVEX_URL`) | SQLite in `var/ctaid-demo.sqlite3` |
+| CSV uploads and model artifacts | Garage S3 bucket `ctaid-poc-demo` | Garage S3 (`S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) | `var/objects/` on local disk |
+
+The Model Training page shows a Convex badge for metadata and a Garage S3 badge
+for artifacts, with a caption that names both. A Convex cron at 03:20 UTC clears
+prediction history and model-version rows. The Python reseed script can do a
+fuller reset, including local files.
 
 Secrets are read from the environment only and are never committed.
 `.env.example` lists the variable names with empty values. Each stored record and
