@@ -162,3 +162,50 @@ def test_ensure_hero_writes_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     path = ensure_hero()
     assert path.is_file()
     assert path.read_text(encoding="utf-8").startswith("<svg")
+
+
+def test_convex_http_payload_keeps_format_out_of_args(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The Convex HTTP API rejects unknown fields inside args with a server error.
+
+    `format` belongs on the envelope, not inside the function arguments.
+    """
+    import sys
+    import types
+
+    captured: dict[str, object] = {}
+
+    class _Resp:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {"status": "success", "value": [{"model": "random_forest"}]}
+
+    def _post(url, json=None, headers=None, timeout=None):
+        captured["url"] = url
+        captured["json"] = json
+        captured["headers"] = headers
+        captured["timeout"] = timeout
+        return _Resp()
+
+    fake = types.ModuleType("requests")
+    fake.post = _post  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "requests", fake)
+
+    from app.backend import ConvexBackend, SQLiteBackend
+    from app.config import ConvexConfig
+
+    backend = ConvexBackend(
+        ConvexConfig(url="https://convex-demo.azril.io", timeout_s=3),
+        SQLiteBackend(tmp_path / "demo.sqlite3"),
+    )
+    versions = backend.list_model_versions(limit=5)
+    assert versions[0]["model"] == "random_forest"
+    assert versions[0]["backend"] == "convex"
+    payload = captured["json"]
+    assert isinstance(payload, dict)
+    assert payload["path"] == "ctaid:listModelVersions"
+    assert payload["args"] == {"limit": 5}
+    assert "format" not in payload["args"]
+    assert payload["format"] == "json"
+    assert captured["url"] == "https://convex-demo.azril.io/api/query"

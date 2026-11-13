@@ -37,6 +37,11 @@ def artifact_badge(store_name: str) -> tuple[str, str]:
 
 def storage_caption(metadata_label: str, storage_label: str) -> str | None:
     """Visitor facing caption under the storage cards, or None if none is needed."""
+    if storage_label == GARAGE_LABEL and metadata_label == CONVEX_LABEL:
+        return (
+            "Metadata is stored in Convex and clears on the scheduled reseed. "
+            "Trained artifacts and uploads are stored in Garage S3."
+        )
     if storage_label == GARAGE_LABEL and metadata_label == DEMO_STORAGE_LABEL:
         return (
             "Metadata is kept on this deployment and clears on the scheduled reseed. "

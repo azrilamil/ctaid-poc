@@ -126,6 +126,7 @@ def test_storage_caption_names_garage_when_artifacts_are_there() -> None:
     both_cloud = storage_caption("Convex", GARAGE_LABEL)
     assert both_cloud is not None
     assert "Garage S3" in both_cloud
+    assert "Convex" in both_cloud
 
 
 

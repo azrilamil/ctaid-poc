@@ -3,6 +3,19 @@
 All notable changes to this project are recorded here. The format follows
 Keep a Changelog, and the project uses semantic versioning.
 
+## [2.0.3] 2026-11-13
+
+### Fixed
+
+- The Convex HTTP client no longer puts `format` inside function arguments.
+  That field belongs on the request envelope; inside `args` the deployment
+  returned a server error and the app fell back to SQLite.
+
+### Changed
+
+- When both Convex and Garage S3 are configured, the Model Training caption
+  names both: metadata on Convex, artifacts and uploads on Garage S3.
+
 ## [2.0.2] 2026-11-13
 
 ### Changed

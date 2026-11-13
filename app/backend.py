@@ -203,7 +203,7 @@ class ConvexBackend:
         headers = {"Content-Type": "application/json"}
         if self.config.token:
             headers["Authorization"] = f"Bearer {self.config.token}"
-        payload = {"path": path, "args": {**args, "format": "json"}, "format": "json"}
+        payload = {"path": path, "args": dict(args), "format": "json"}
         response = requests.post(url, json=payload, headers=headers, timeout=self.config.timeout_s)
         response.raise_for_status()
         body = response.json()
