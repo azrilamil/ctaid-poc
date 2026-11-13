@@ -24,7 +24,8 @@ on any content leak.
 | `tests/test_generator.py` | column order, row counts, schema ranges, determinism, record grouping, class signal, committed CSV shape |
 | `tests/test_training.py` | all four models fit, metrics in range, artifact and sidecar written, prediction probabilities sum to one, upload rejections |
 | `tests/test_backend.py` | SQLite round trip and reset, Convex URL fallback, local store put/get/list/clear, path traversal guard, S3 fallback, hero SVG validity |
-| `tests/test_privacy.py` | work tree is clean, scanner detects injected leaks, dashes, `Patient ID`, credentials |
+| `tests/test_privacy.py` | work tree is clean, scanner detects injected leaks, dashes, identifier headers, credentials |
+| `tests/test_ui_polish.py` | Pattern display alias, Random Forest default picker, non zero importances, Demo storage badges, no internal column name in UI copy |
 | `tests/test_app_smoke.py` | Home renders, all four pages render, training click produces tables, prediction page offers input methods |
 
 ## What the smoke tests guard
@@ -52,7 +53,7 @@ Checks the public work tree only, skipping `.git`, `.venv`, `__pycache__`,
 
 - institution, project and original file name markers
 - emails, phone numbers, API keys, private key blocks
-- `Patient ID` headers in committed CSVs
+- identifier headers in committed CSVs
 - em dashes and en dashes
 - Malay leftovers in prose
 

@@ -11,7 +11,9 @@ from app.predict import UploadError, align_features, predict_frame, prediction_r
 from app.schema import TARGET_COLUMN
 from app.state import backend, dataset, store, trained_runs
 from app.theme import MUTED, footer, notice, page_header, section, stat
-from app.training import MODEL_SPECS, load_artifact
+from app.training import MODEL_SPECS, best_artifact
+
+DEFAULT_MODEL_KEY = "random_forest"
 
 KEY_FEATURES = [
     "CONVENTIONAL_mean",
@@ -33,6 +35,7 @@ def _available_models() -> dict[str, dict]:
                 "pipeline": result.pipeline,
                 "feature_names": run.feature_names,
                 "key": result.key,
+                "metrics": result.metrics,
             }
     if options:
         return options
@@ -40,16 +43,47 @@ def _available_models() -> dict[str, dict]:
 
     names = feature_columns(dataset())
     for key, spec in MODEL_SPECS.items():
-        try:
-            pipeline = load_artifact(model_dir(), key)
-        except Exception:
+        found = best_artifact(model_dir(), key)
+        if found is None:
             continue
-        options[f"{spec['label']} (saved artifact)"] = {
+        pipeline, metrics = found
+        options[_artifact_label(spec["label"], metrics)] = {
             "pipeline": pipeline,
             "feature_names": names,
             "key": key,
+            "metrics": metrics,
         }
     return options
+
+
+def _artifact_label(label: str, metrics: dict[str, float]) -> str:
+    """Readable option label that quotes the saved held out scores."""
+    if not metrics:
+        return f"{label} (saved artifact)"
+    auc = metrics.get("roc_auc_macro")
+    accuracy = metrics.get("accuracy")
+    if auc is None or accuracy is None:
+        return f"{label} (saved artifact)"
+    return f"{label}, AUC {auc:.3f}, accuracy {accuracy:.3f} (saved artifact)"
+
+
+def default_model_label(models: dict[str, dict]) -> str | None:
+    """Best available Random Forest entry, else the first option.
+
+    Random Forest is the documented strongest saved model (accuracy 0.8419,
+    AUC 0.9595), so the Prediction page opens on it rather than on a linear
+    baseline that shows a weak confidence and all zero importances.
+    """
+    if not models:
+        return None
+    forest = [label for label, entry in models.items() if entry.get("key") == DEFAULT_MODEL_KEY]
+    if forest:
+        def _rank(label: str) -> tuple[float, float]:
+            metrics = models[label].get("metrics") or {}
+            return (metrics.get("roc_auc_macro", 0.0), metrics.get("accuracy", 0.0))
+
+        return max(forest, key=_rank)
+    return next(iter(models))
 
 
 def _model_picker(models: dict[str, dict]) -> dict | None:
@@ -59,7 +93,10 @@ def _model_picker(models: dict[str, dict]) -> dict | None:
             "or run python scripts/train_demo_model.py to create the default artifact."
         )
         return None
-    choice = st.selectbox("Model", options=list(models))
+    options = list(models)
+    default_label = default_model_label(models)
+    default_index = options.index(default_label) if default_label in options else 0
+    choice = st.selectbox("Model", options=options, index=default_index)
     return models[choice]
 
 
@@ -161,7 +198,7 @@ def _render_result(prediction, frame) -> None:
         st.markdown(
             f"The model assigns **{prediction.predicted_label}** the highest probability. "
             "This is a number produced by a classifier trained only on invented data. "
-            "It is not a diagnosis and must never inform care."
+            "It is not a clinical result and must never inform care."
         )
         if prediction.top_features:
             st.markdown("**Features weighted most by this model:**")
@@ -175,6 +212,8 @@ def _render_result(prediction, frame) -> None:
                 width="stretch",
                 hide_index=True,
             )
+        else:
+            st.caption("This model does not expose per feature weights.")
 
 
 def render() -> None:

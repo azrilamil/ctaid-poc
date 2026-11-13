@@ -18,7 +18,9 @@ Prediction. The demo notice sits on every page.
 
 ## Data Exploration
 
-- Class filter that scopes every chart and table below it.
+- Class filter that scopes every chart and table below it. The target column is
+  labelled `Pattern` everywhere; the CSV keeps its internal column name behind a
+  display alias in `app/schema.py`.
 - Stat strip: rows in view, records, feature columns, largest class.
 - **Table** tab: sortable view with a row limit, plus a download button for the
   filtered slice.
@@ -34,7 +36,9 @@ Prediction. The demo notice sits on every page.
 ## Model Training
 
 - Backend status strip: metadata backend, model versions, predictions logged,
-  artifact store.
+  artifact store. With local fallbacks the two storage cards read `Demo storage`
+  with the hint `Local to this demo, resets on a schedule`; the raw backend name
+  is never shown. Convex and Garage S3 are named only when actually configured.
 - Model picker over four classifiers: Logistic Regression, Random Forest, SVM
   (sigmoid calibrated), Gradient Boosting.
 - Test split slider, random seed and a row cap for fast demo runs.
@@ -48,7 +52,10 @@ Prediction. The demo notice sits on every page.
 
 ## Prediction
 
-- Model picker: this session's fitted pipelines first, then saved artifacts.
+- Model picker: this session's fitted pipelines first, then saved artifacts. It
+  opens on the best saved Random Forest (ranked by held out ROC AUC, then
+  accuracy), because that is the strongest documented model (accuracy 0.8419,
+  macro ROC AUC 0.9595). Saved options quote their scores in the label.
 - Three input methods:
   - **Form**: sliders and number inputs for the seven most informative features;
     every other column stays at its synthetic median.
@@ -57,7 +64,9 @@ Prediction. The demo notice sits on every page.
   - **Upload CSV**: validated for extension, size, content type, binary content
     and row count, then aligned against the trained feature list.
 - Result panel: predicted pattern, confidence, model, rows scored, class
-  probability bars and the model's top weighted features.
+  probability bars and the model's top weighted features. Weights are the fitted
+  `feature_importances_` for tree models and absolute mean coefficients for
+  linear models, so the table is never all zeros.
 - Optional logging of the prediction to demo history.
 - The medical disclaimer renders again at the bottom of the page.
 

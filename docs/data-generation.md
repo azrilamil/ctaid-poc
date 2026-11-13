@@ -26,7 +26,7 @@ python scripts/generate_synthetic_data.py --records 900 --out /tmp/big.csv
 | Identifier column | `Record ID`, sequential from 1 to 700 |
 | Grouping column | `Vessel`, values 1 to 3 |
 | Feature columns | 65 numeric columns |
-| Target | `Diagnosis`, integer 0 to 3 |
+| Target | `Pattern`, integer 0 to 3 (stored in the CSV under the internal column name `Diagnosis`; the UI labels it `Pattern`) |
 
 Column names, dtypes and ranges come from a published design brief. The brief
 supplied names and summary statistics only, never rows: `app/schema.py` stores
@@ -69,7 +69,7 @@ The four classes are `Pattern A` to `Pattern D`:
 | 3 | Pattern D | mixed region, high texture contrast |
 
 These descriptions are invented helper text for the demo. They are not clinical
-categories, not diagnoses, and the app says so wherever they appear.
+categories, not clinical labels, and the app says so wherever they appear.
 
 ## What the generator does not do
 

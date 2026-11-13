@@ -30,7 +30,7 @@ def render() -> None:
     with cols[1]:
         stat("Feature columns", f"{info['feature_count']}", "Texture, shape and intensity features")
     with cols[2]:
-        stat("Pattern classes", "4", "Invented labels, not diagnoses")
+        stat("Pattern classes", "4", "Invented labels, never a clinical finding")
     with cols[3]:
         stat("Models available", "4", "Logistic, forest, SVM, boosting")
 
@@ -69,7 +69,7 @@ def render() -> None:
         st.markdown(
             f"The table holds **{info['rows']:,} rows** across **{info['records']:,} synthetic "
             f"records**, {info['feature_count']} feature columns, plus `{RECORD_ID_COLUMN}`, "
-            "`Vessel` and `Diagnosis`. Columns use names and value ranges from a published "
+            "`Vessel` and `Pattern`. Columns use names and value ranges from a published "
             "design brief; every value is drawn fresh from those ranges.",
         )
         chips(["Fresh synthetic rows", "Fixed seed", "No identifiers", "No real scans"])
@@ -97,9 +97,10 @@ def render() -> None:
         )
     with privacy_right:
         st.markdown(
-            "Optional backend wiring (Convex for metadata, Garage S3 for artifacts) runs only "
-            "when the matching environment variables exist. Without them the app falls back to "
-            "local SQLite and local files, so the demo is complete offline."
+            "Metadata and trained artifacts are kept by a storage layer that runs "
+            "inside the demo. Optional cloud wiring switches on only when the matching "
+            "environment variables exist, so the demo is complete offline and resets on "
+            "a schedule."
         )
         st.markdown(
             f"Feature columns in play: `{FEATURE_NAMES[0]}`, `{FEATURE_NAMES[1]}`, "

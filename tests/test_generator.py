@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from app.data import feature_columns, load_dataset, summary
+from app.privacy import IDENTIFIER_COLUMN
 from app.schema import (
     DERIVED_COLUMNS,
     FEATURE_COLUMNS,
@@ -28,7 +29,7 @@ def test_generator_shape_matches_schema(frame: pd.DataFrame) -> None:
     assert len(frame) == 120 * VESSELS_PER_RECORD
     assert frame.shape[1] == 3 + len(FEATURE_NAMES)
     assert list(frame.columns) == [RECORD_ID_COLUMN, VESSEL_COLUMN, *FEATURE_NAMES, TARGET_COLUMN]
-    assert "Patient ID" not in frame.columns
+    assert IDENTIFIER_COLUMN not in frame.columns
 
 
 def test_generator_respects_ranges(frame: pd.DataFrame) -> None:

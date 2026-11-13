@@ -15,8 +15,9 @@ exists so nobody mistakes the demo for a validated model.
 | Source | `data/synthetic_features.csv`, generated in this repository |
 | Rows | 2100 (700 records x 3 vessels) |
 | Features used | 65 numeric columns |
-| Excluded | `Record ID`, `Vessel`, `Diagnosis` (target) |
-| Target | `Diagnosis`, 4 classes, labels `Pattern A` to `Pattern D` |
+| Excluded | `Record ID`, `Vessel`, the target column |
+| Target | `Pattern`, 4 classes, labels `Pattern A` to `Pattern D` |
+| Column note | The CSV stores the target under the internal column name `Diagnosis`; every screen shows it as `Pattern` through a display alias in `app/schema.py` |
 | Class priors | 0.30, 0.26, 0.24, 0.20 |
 | Split | 75 / 25 stratified, seed 42 |
 | Missing values | none; the pipeline imputes medians as a safety net |

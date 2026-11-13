@@ -33,7 +33,8 @@ does not map to any person, and it changes if the dataset is regenerated with a
 different record count.
 
 `app/privacy.py` enforces the column rule: a committed CSV must contain
-`Record ID` and must not contain a `Patient ID` header.
+`Record ID` and must not contain a per person identifier header. The scanner
+keeps that forbidden header encoded, so the repository does not spell it out.
 
 ## Personal data patterns
 
@@ -75,7 +76,7 @@ The scan walks the public work tree and checks for:
 - institution and project markers that must never ship
 - original data and image file names
 - emails, phone numbers, API keys, private key blocks
-- `Patient ID` as a committed CSV header
+- identifier headers that would name a person
 - em dashes and en dashes in any text file
 - Malay leftovers in prose files
 

@@ -10,9 +10,10 @@ import numpy as np
 import pandas as pd
 
 from app.config import MAX_UPLOAD_BYTES, MAX_UPLOAD_ROWS, REQUIRED_UPLOAD_SUFFIX
-from app.schema import CLASS_LABELS, RECORD_ID_COLUMN, TARGET_COLUMN, VESSEL_COLUMN
+from app.privacy import IDENTIFIER_COLUMN
+from app.schema import CLASS_LABELS, DISPLAY_LABELS, RECORD_ID_COLUMN, TARGET_COLUMN, TARGET_DISPLAY, VESSEL_COLUMN
 
-DROP_ON_UPLOAD = {RECORD_ID_COLUMN, "Patient ID", VESSEL_COLUMN, TARGET_COLUMN}
+DROP_ON_UPLOAD = {RECORD_ID_COLUMN, IDENTIFIER_COLUMN, VESSEL_COLUMN, TARGET_COLUMN, TARGET_DISPLAY}
 
 
 class UploadError(ValueError):
@@ -89,7 +90,8 @@ def read_upload(filename: str | None, payload: bytes, content_type: str | None =
     dropped = tuple(col for col in frame.columns if col in DROP_ON_UPLOAD)
     if dropped:
         frame = frame.drop(columns=list(dropped))
-        warnings.append("Dropped non modelling column(s): " + ", ".join(dropped) + ".")
+        shown = ", ".join(DISPLAY_LABELS.get(name, name) for name in dropped)
+        warnings.append("Dropped non modelling column(s): " + shown + ".")
 
     report = UploadReport(
         name=filename or "upload.csv",
@@ -114,6 +116,42 @@ def align_features(frame: pd.DataFrame, feature_names: list[str]) -> tuple[pd.Da
     return aligned, extra
 
 
+def feature_weights(pipeline, feature_names: list[str]) -> dict[str, float]:
+    """Real per feature weights from the fitted model.
+
+    Tree ensembles expose ``feature_importances_``. Linear models expose
+    ``coef_``, so the absolute mean coefficient across classes is used. A
+    calibrated wrapper is unwrapped to its fitted base estimator. When nothing
+    is available the mapping stays empty and the UI just omits the table.
+    """
+    estimator = None
+    if hasattr(pipeline, "named_steps"):
+        estimator = pipeline.named_steps.get("model")
+    if estimator is None:
+        return {}
+
+    # Unwrap calibration wrappers and voting style ensembles.
+    calibrated = getattr(estimator, "calibrated_classifiers_", None)
+    if calibrated:
+        fitted = getattr(calibrated[0], "estimator", None) or getattr(calibrated[0], "base_estimator", None)
+        if fitted is not None:
+            estimator = fitted
+
+    values: np.ndarray | None = None
+    raw = getattr(estimator, "feature_importances_", None)
+    if raw is not None:
+        values = np.asarray(raw, dtype=float)
+    else:
+        coef = getattr(estimator, "coef_", None)
+        if coef is not None:
+            coef = np.asarray(coef, dtype=float)
+            values = np.abs(coef).mean(axis=0) if coef.ndim > 1 else np.abs(coef)
+
+    if values is None or values.shape[0] != len(feature_names):
+        return {}
+    return {name: float(weight) for name, weight in zip(feature_names, values, strict=True)}
+
+
 def predict_frame(pipeline, frame: pd.DataFrame, feature_names: list[str], model_key: str = "model") -> list[Prediction]:
     """Score every row of a curated frame."""
     aligned, _ = align_features(frame, feature_names)
@@ -122,24 +160,17 @@ def predict_frame(pipeline, frame: pd.DataFrame, feature_names: list[str], model
     proba = pipeline.predict_proba(values)
     predicted = pipeline.predict(values)
 
-    importances = {}
-    estimator = pipeline.named_steps.get("model") if hasattr(pipeline, "named_steps") else None
-    if estimator is not None and hasattr(estimator, "feature_importances_"):
-        raw = np.asarray(estimator.feature_importances_, dtype=float)
-        if len(raw) == len(feature_names):
-            importances = dict(zip(feature_names, raw, strict=True))
-
+    importances = feature_weights(pipeline, feature_names)
     out: list[Prediction] = []
     for row_index in range(len(aligned)):
         row_proba = {cls: round(float(proba[row_index][pos]), 4) for pos, cls in enumerate(classes)}
-        top = sorted(
-            (
-                (name, float(values[row_index][pos]), float(importances.get(name, 0.0)))
-                for pos, name in enumerate(feature_names)
-            ),
-            key=lambda item: item[2],
-            reverse=True,
-        )[:5]
+        weighted = [
+            (name, float(values[row_index][pos]), float(importances[name]))
+            for pos, name in enumerate(feature_names)
+            if importances.get(name, 0.0) > 0.0
+        ]
+        weighted.sort(key=lambda item: item[2], reverse=True)
+        top = weighted[:5]
         cls = int(predicted[row_index])
         out.append(
             Prediction(

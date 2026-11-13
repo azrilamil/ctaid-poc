@@ -61,7 +61,7 @@ MODEL_SPECS: dict[str, dict[str, Any]] = {
     },
 }
 
-DEFAULT_MODELS = ("logistic_regression", "random_forest")
+DEFAULT_MODELS = ("random_forest", "logistic_regression")
 
 
 @dataclass(frozen=True)
@@ -331,6 +331,47 @@ def load_artifact(directory: Path, key: str) -> Pipeline:
     if not path.is_file():
         raise FileNotFoundError(f"No trained artifact for {key} at {path}")
     return joblib.load(path)
+
+
+def artifact_metrics(path: Path) -> dict[str, float]:
+    """Read the held out metrics saved next to an artifact, if any."""
+    sidecar = Path(path).with_suffix(".json")
+    if not sidecar.is_file():
+        return {}
+    try:
+        payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    metrics = payload.get("metrics")
+    return {str(k): float(v) for k, v in metrics.items()} if isinstance(metrics, dict) else {}
+
+
+def artifact_sort_key(path: Path) -> tuple[float, float]:
+    """Rank saved artifacts by held out AUC first, then accuracy."""
+    metrics = artifact_metrics(path)
+    return (metrics.get("roc_auc_macro", 0.0), metrics.get("accuracy", 0.0))
+
+
+def best_artifact(directory: Path, key: str) -> tuple[Pipeline, dict[str, float]] | None:
+    """Load the best saved artifact for one model key.
+
+    Versions are ranked by held out ROC AUC and then accuracy, so the demo
+    shows the strongest saved fit rather than whichever file sort order puts
+    first. Falls back to ``{key}-latest.joblib`` when no sidecar is present.
+    """
+    import joblib
+
+    directory = Path(directory)
+    candidates = sorted(directory.glob(f"{key}-*.joblib"), key=artifact_sort_key, reverse=True)
+    for path in candidates:
+        try:
+            return joblib.load(path), artifact_metrics(path)
+        except Exception:  # pragma: no cover - corrupted artifact guard
+            continue
+    latest = directory / f"{key}-latest.joblib"
+    if latest.is_file():
+        return joblib.load(latest), artifact_metrics(latest)
+    return None
 
 
 def ranked_features(frame: pd.DataFrame, features: list[str] | None = None, limit: int = 6) -> list[tuple[str, float]]:

@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
 from app import charts
 from app.backend import status
 from app.data import class_label
+from app.labels import DEMO_STORAGE_LABEL, artifact_badge, metadata_badge
 from app.schema import CLASS_LABELS
 from app.state import backend, dataset, model_dir, set_active_run, store, trained_runs
 from app.theme import MUTED, footer, page_header, section, stat
@@ -47,7 +50,8 @@ def _persist(run: TrainingRun, active_backend, active_store) -> list[str]:
                     __import__("pathlib").Path(result.artifact),
                     content_type="application/octet-stream",
                 )
-                notes.append(f"{result.label}: {stored.backend} {stored.location}")
+                label, _hint = artifact_badge(stored.backend)
+                notes.append(f"{result.label}: artifact in {label}")
             except Exception as exc:  # pragma: no cover - storage guard
                 notes.append(f"{result.label}: artifact kept locally ({exc})")
     return notes
@@ -193,7 +197,7 @@ def _render_results(run: TrainingRun) -> None:
                 theme=None,
             )
             if result.artifact:
-                st.caption(f"Artifact: {result.artifact}")
+                st.caption(f"Saved as {Path(result.artifact).name} in the demo model store.")
 
     section("Version log", "Model versions recorded by the backend for this demo session.")
     versions = backend().list_model_versions(limit=12)
@@ -228,16 +232,23 @@ def render() -> None:
     )
 
     info = status(backend())
+    metadata_label, metadata_hint = metadata_badge(info.backend)
+    storage = store()
+    storage_label, storage_hint = artifact_badge(storage.backend)
     cols = st.columns(4)
     with cols[0]:
-        stat("Metadata backend", info.backend, "Convex when configured, else SQLite")
+        stat("Metadata backend", metadata_label, metadata_hint)
     with cols[1]:
         stat("Model versions", f"{info.model_versions}", "recorded runs")
     with cols[2]:
         stat("Predictions logged", f"{info.prediction_count}", "synthetic only")
     with cols[3]:
-        storage = store()
-        stat("Artifact store", storage.backend, "Garage S3 when configured, else local")
+        stat("Artifact store", storage_label, storage_hint)
+    if DEMO_STORAGE_LABEL in (metadata_label, storage_label):
+        st.caption(
+            "Demo storage is local to this deployment and is cleared by the scheduled reseed, "
+            "so nothing here is a permanent record."
+        )
 
     section("Configuration", "Pick models, split size and an optional row cap.")
     models, test_size, random_state, row_cap = _controls()
@@ -266,7 +277,7 @@ def render() -> None:
             unsafe_allow_html=True,
         )
         for class_id in CLASS_LABELS:
-            st.caption(f"{class_label(class_id)} is an invented pattern group, not a diagnosis.")
+            st.caption(f"{class_label(class_id)} is an invented pattern group, not a clinical finding.")
         footer()
         return
 

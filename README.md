@@ -11,7 +11,7 @@ data, no clinical images, and no copied code from the original system.
 
 **Live demo:** [https://ctaid-poc.azril.io](https://ctaid-poc.azril.io)
 
-> **Demo with synthetic data, not a medical tool.** This app uses invented local data only. It is not a medical device, it does not give a diagnosis, and it is not affiliated with any clinic, university, or other institution. It must not be used for clinical decisions.
+> **Demo with synthetic data, not a medical tool.** This app uses invented local data only. It is not a medical device, it does not provide clinical findings, and it is not affiliated with any clinic, university, or other institution. It must not be used for clinical decisions.
 
 ## What it is
 
@@ -91,7 +91,7 @@ working.
 | Rows | 2100 (700 records, 3 vessels each) |
 | Columns | 68, of which 65 are numeric features |
 | Identifier | `Record ID`, sequential, no person behind it |
-| Target | `Diagnosis`, values 0 to 3, labels `Pattern A` to `Pattern D` |
+| Target | `Pattern`, values 0 to 3, labels `Pattern A` to `Pattern D` (the CSV column is still named `Diagnosis` internally; the UI always shows `Pattern`) |
 | Seed | 20261113, fixed for reproducibility |
 
 Column names, dtypes and value ranges come from a design brief. No rows were
@@ -133,7 +133,7 @@ python scripts/reseed-demo.py             # regenerate CSV, clear uploads and hi
 - Uploads are limited to CSV, 2 MB, 500 rows, text content type, and are cleared
   by the reseed script.
 - `scripts/scan_content.py` scans the work tree for forbidden markers, personal
-  data patterns, credentials, `Patient ID` columns and forbidden dashes. CI runs
+  data patterns, credentials, identifier headers and forbidden dashes. CI runs
   it on every push.
 
 ## Stack

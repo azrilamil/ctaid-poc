@@ -13,9 +13,18 @@ from app.data import (
     feature_columns,
     top_correlations,
 )
-from app.schema import TARGET_COLUMN
+from app.schema import DISPLAY_LABELS, TARGET_COLUMN
 from app.state import current_summary, dataset
 from app.theme import MUTED, footer, page_header, section, stat, truncate
+
+
+def _display_name(column: str) -> str:
+    return DISPLAY_LABELS.get(column, column)
+
+
+def _display_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    """Rename internal columns to their visitor facing labels."""
+    return frame.rename(columns=DISPLAY_LABELS)
 
 
 def _filter_frame(frame: pd.DataFrame) -> pd.DataFrame:
@@ -35,12 +44,20 @@ def _filter_frame(frame: pd.DataFrame) -> pd.DataFrame:
 
 def _table_view(frame: pd.DataFrame) -> None:
     features = feature_columns(frame)
-    column = st.selectbox("Sort column", options=[TARGET_COLUMN, "Vessel", *features], index=0)
+    shown = [_display_name(column) for column in [TARGET_COLUMN, "Vessel", *features]]
+    lookup = {_display_name(column): column for column in [TARGET_COLUMN, "Vessel", *features]}
+    choice = st.selectbox(
+        "Sort column",
+        options=shown,
+        index=0,
+        help="Sort the synthetic table by any column.",
+    )
+    column = lookup[choice]
     ascending = st.toggle("Ascending", value=True)
     limit = st.slider("Rows to show", min_value=20, max_value=400, value=80, step=20)
     view = frame.sort_values(column, ascending=ascending).head(limit)
     st.dataframe(
-        view,
+        _display_frame(view),
         width="stretch",
         height=420,
         hide_index=True,
@@ -51,7 +68,7 @@ def _table_view(frame: pd.DataFrame) -> None:
     )
     st.download_button(
         "Download filtered rows as CSV",
-        data=view.to_csv(index=False).encode("utf-8"),
+        data=_display_frame(view).to_csv(index=False).encode("utf-8"),
         file_name="ctaid-poc-filtered-synthetic.csv",
         mime="text/csv",
     )

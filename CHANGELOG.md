@@ -3,6 +3,36 @@
 All notable changes to this project are recorded here. The format follows
 Keep a Changelog, and the project uses semantic versioning.
 
+## [2.0.1] 2026-11-13
+
+Visitor facing polish after a screenshot review. No change to the data, the
+models or the training path.
+
+### Changed
+
+- The target column is labelled `Pattern` in every visitor facing surface: the
+  Data Exploration sort dropdown, the table header, the downloaded CSV and the
+  Home page copy. The CSV keeps the internal column name, mapped through
+  `DISPLAY_LABELS` and `TARGET_DISPLAY` in `app/schema.py`.
+- Prediction opens on the best saved Random Forest (accuracy 0.8419, macro ROC
+  AUC 0.9595) instead of the first option, and saved artifact labels quote their
+  held out scores. `app/training.py` gained `best_artifact`, which ranks saved
+  versions by ROC AUC then accuracy.
+- Top weighted features on a prediction are real non zero values: tree
+  `feature_importances_`, or absolute mean coefficients for a linear model, via
+  `predict.feature_weights`. Calibrated wrappers are unwrapped first.
+- Model Training storage cards read `Demo storage` with the hint `Local to this
+  demo, resets on a schedule` when Convex and Garage are not configured, and name
+  the product only when it actually is. `app/labels.py` holds the mapping.
+- Default trained models are Random Forest then Logistic Regression, so the demo
+  script produces the default artifact first.
+
+### Added
+
+- `tests/test_ui_polish.py`: Pattern alias, Random Forest default selection,
+  non zero importances for tree and linear models, storage badges and a guard
+  that no page module contains the internal column name as copy.
+
 ## [2.0.0] 2026-11-13
 
 Complete rebuild. The previous 1.x app was a thin FastAPI single form; this
@@ -31,7 +61,7 @@ interface, page for page, on freshly generated synthetic data.
   fallback for uploads and artifacts.
 - `scripts/reseed-demo.py` to regenerate data, clear uploads and reset history.
 - `app/privacy.py` and `scripts/scan_content.py`: content and privacy scan with
-  base64 encoded markers, dash detection and `Patient ID` column detection.
+  base64 encoded markers, dash detection and identifier header detection.
 - `app/artwork.py`: original SVG hero illustration, MIT licensed.
 - Test suite: generator, training, prediction, upload rejection, backend, storage,
   privacy and Streamlit page smoke tests.

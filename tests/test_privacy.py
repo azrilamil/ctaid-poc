@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.privacy import FORBIDDEN_TERMS, Finding, scan_tree, summarise
+from app.privacy import FORBIDDEN_TERMS, IDENTIFIER_COLUMN, Finding, scan_tree, summarise
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,7 +38,7 @@ def test_scan_catches_dashes(tmp_path: Path) -> None:
 
 def test_scan_catches_patient_id_column(tmp_path: Path) -> None:
     data = tmp_path / "data.csv"
-    data.write_text("Patient ID,Vessel\n1,1\n", encoding="utf-8")
+    data.write_text(IDENTIFIER_COLUMN + ",Vessel\n1,1\n", encoding="utf-8")
     findings = scan_tree(tmp_path)
     kinds = {finding.kind for finding in findings}
     assert "forbidden column" in kinds

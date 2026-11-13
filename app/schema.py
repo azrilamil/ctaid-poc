@@ -10,7 +10,10 @@ from __future__ import annotations
 
 RECORD_ID_COLUMN = "Record ID"
 VESSEL_COLUMN = "Vessel"
+# Internal CSV column name. It is never shown as a label: every visitor facing
+# surface uses TARGET_DISPLAY ("Pattern") through display aliases below.
 TARGET_COLUMN = "Diagnosis"
+TARGET_DISPLAY = "Pattern"
 VESSELS_PER_RECORD = 3
 
 # Class labels are neutral on purpose. The demo never claims a clinical
@@ -759,15 +762,23 @@ DERIVED_COLUMNS = {
 }
 EXCESS_KURTOSIS_OFFSET = 3.0
 
+# Column aliases for display only. The CSV keeps its internal names so the
+# generator, models and tests stay stable; the UI shows the friendly label.
+DISPLAY_LABELS = {
+    TARGET_COLUMN: TARGET_DISPLAY,
+}
+
 __all__ = [
     "CLASS_DESCRIPTIONS",
     "CLASS_LABELS",
     "DERIVED_COLUMNS",
+    "DISPLAY_LABELS",
     "EXCESS_KURTOSIS_OFFSET",
     "FEATURE_COLUMNS",
     "FEATURE_NAMES",
     "RECORD_ID_COLUMN",
     "TARGET_COLUMN",
+    "TARGET_DISPLAY",
     "VESSEL_COLUMN",
     "VESSELS_PER_RECORD",
 ]

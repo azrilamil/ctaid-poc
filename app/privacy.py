@@ -78,6 +78,10 @@ _TERMS_B64 = (
 
 FORBIDDEN_TERMS = tuple(base64.b64decode(item).decode("utf-8") for item in _TERMS_B64)
 
+# The patient identifier header the scan rejects. Kept encoded for the same
+# reason as the markers above: the repository should not carry the literal.
+IDENTIFIER_COLUMN = base64.b64decode("UGF0aWVudCBJRA==").decode("utf-8")
+
 # Patterns that would indicate leaked personal data or credentials.
 FORBIDDEN_PATTERNS = (
     (re.compile(r"[\w.+-]+@[\w-]+\.[\w.]{2,}"), "email address"),
@@ -143,11 +147,12 @@ def scan_file(path: Path, root: Path) -> list[Finding]:
                     continue
                 findings.append(Finding(relative, line_number, label, value[:40]))
 
-    # Column rule: committed data must carry Record ID, never Patient ID.
+    # Column rule: committed data must carry Record ID, never an identifier
+    # header for a person. The literal name is encoded above, not spelled out.
     if path.suffix.lower() == ".csv":
         header = text.splitlines()[0] if text.splitlines() else ""
-        if "Patient ID" in header:
-            findings.append(Finding(relative, 1, "forbidden column", "Patient ID"))
+        if IDENTIFIER_COLUMN in header:
+            findings.append(Finding(relative, 1, "forbidden column", IDENTIFIER_COLUMN))
         if "Record ID" not in header:
             findings.append(Finding(relative, 1, "missing column", "Record ID"))
 
